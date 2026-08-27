@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config({ path: `${__dirname}/.env` });
 
 const errorHandler = require('./src/middleware/errorHandler');
@@ -14,12 +15,14 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json({ limit: '100kb' }));
+app.use(cookieParser());
 app.use('/uploads', express.static(`${__dirname}/uploads`));
 
 app.get('/api/health', (_req, res) => {
   res.json({ success: true, status: 'ok', message: 'Portfolio API is running.' });
 });
 
+app.use('/api/admin', require('./src/routes/admin'));
 app.use('/api/projects', require('./src/routes/projects'));
 app.use('/api/blog', require('./src/routes/blog'));
 app.use('/api/certificates', require('./src/routes/certificates'));

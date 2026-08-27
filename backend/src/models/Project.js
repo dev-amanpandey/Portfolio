@@ -22,6 +22,12 @@ const projectSchema = new mongoose.Schema(
     keyFeatures:  [{ type: String }],
     whatILearned: { type: String, default: '' },
     order:        { type: Number, default: 0 },
+    publicationStatus: {
+      type: String,
+      enum: ['published', 'draft'],
+      default: 'published',
+    },
+    displayOrder: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

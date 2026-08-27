@@ -16,6 +16,11 @@ const errorHandler = (err, _req, res, _next) => {
     message = 'Resource not found';
   }
 
+  if (err.name === 'MulterError') {
+    statusCode = 400;
+    message = err.code === 'LIMIT_FILE_SIZE' ? 'Uploaded file must be 10 MB or smaller.' : err.message;
+  }
+
   res.status(statusCode).json({ success: false, message });
 };
 
