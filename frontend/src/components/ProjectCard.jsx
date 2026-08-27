@@ -24,6 +24,7 @@ const formatCategory = (category) => {
     'web-apps': 'Web App',
     'full-stack': 'Full Stack',
     'frontend': 'Frontend',
+    'backend': 'Backend',
   };
   return categoryMap[category.toLowerCase()] || category.replace(/-/g, ' ');
 };

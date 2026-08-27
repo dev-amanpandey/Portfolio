@@ -24,6 +24,7 @@ const projectFilterTabs = [
   { label: 'Web Apps', value: 'web-apps' },
   { label: 'Full Stack', value: 'full-stack' },
   { label: 'Frontend', value: 'frontend' },
+  { label: 'Backend', value: 'backend' },
 ];
 
 export default function PublicPortfolio() {
@@ -32,6 +33,7 @@ export default function PublicPortfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [projectFilter, setProjectFilter] = useState('all');
+  const projectsRef = useRef(null);
   const [certificates, setCertificates] = useState([]);
   const [certificateError, setCertificateError] = useState('');
   const certificatesRef = useRef(null);
@@ -67,6 +69,13 @@ export default function PublicPortfolio() {
   const jump = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);
+  };
+
+  const scrollProjects = (direction) => {
+    if (projectsRef.current) {
+      const scrollAmount = direction === 'left' ? -400 : 400;
+      projectsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   };
 
   const scrollCertificates = (direction) => {
@@ -161,7 +170,7 @@ export default function PublicPortfolio() {
             <div className="dot-grid" /><div className="backdrop" /><div className="rings" />
             <span className="accent-rays">⌁</span>
             <img src="/images/profile.jpeg" alt="Aman Pandey" />
-            <div className="experience-card"><strong>2+</strong><span>Years of<br />Experience</span></div>
+            {/* <div className="experience-card"><strong>2+</strong><span>Years of<br />Experience</span></div> */}
           </div>
           <button className="scroll-hint" onClick={() => jump('about')}>Scroll Down <span><ArrowDown size={18} /></span></button>
         </section>
@@ -185,7 +194,7 @@ export default function PublicPortfolio() {
               <div><dt>✦ Name</dt><dd>Aman Pandey</dd></div>
               <div><dt>✦ Email</dt><dd>amanpandey7651@gmail.com</dd></div>
               <div><dt>✦ Location</dt><dd>India</dd></div>
-              <div><dt>✦ Experience</dt><dd>2+ Years</dd></div>
+              <div><dt>✦ Experience</dt><dd>Fresher</dd></div>
             </dl>
             <a className="primary compact" href="/documents/Aman-Pandey-Resume.pdf" download>Download CV <Download size={15} /></a>
           </div>
@@ -217,9 +226,35 @@ export default function PublicPortfolio() {
         </section>
 
         <section id="projects" className="section projects-section">
-          <p className="eyebrow">✦ My Projects</p>
-          <h2>Things I've built</h2>
-          <p className="section-lead">Here are some of the projects I've worked on. Each showcases a unique piece of development.</p>
+          <div className="section-header-row">
+            <div>
+              <p className="eyebrow">✦ My Projects</p>
+              <h2>Things I've built</h2>
+              <p className="section-lead">Here are some of the projects I've worked on. Each showcases a unique piece of development.</p>
+            </div>
+            {filteredProjects.length > 1 && (
+              <div className="carousel-nav-arrows">
+                <button
+                  type="button"
+                  className="carousel-arrow-btn"
+                  onClick={() => scrollProjects('left')}
+                  aria-label="Previous projects"
+                  title="Scroll left"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  className="carousel-arrow-btn"
+                  onClick={() => scrollProjects('right')}
+                  aria-label="Next projects"
+                  title="Scroll right"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
+          </div>
           <div className="filters" role="tablist" aria-label="Filter projects by category">
             {projectFilterTabs.map((tab) => (
               <button
@@ -235,10 +270,18 @@ export default function PublicPortfolio() {
             ))}
           </div>
           {filteredProjects.length > 0 ? (
-            <div className="project-grid">
-              {filteredProjects.map((project) => (
-                <ProjectCard key={project._id} project={project} />
-              ))}
+            <div className="project-carousel-wrapper">
+              <div
+                className="project-carousel"
+                ref={projectsRef}
+                tabIndex={0}
+                role="region"
+                aria-label="Projects carousel"
+              >
+                {filteredProjects.map((project) => (
+                  <ProjectCard key={project._id} project={project} />
+                ))}
+              </div>
             </div>
           ) : (
             <p className="empty-projects">

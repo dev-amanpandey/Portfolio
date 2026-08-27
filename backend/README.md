@@ -12,7 +12,7 @@ Express and MongoDB API for the React portfolio. The Vite proxy forwards `/api` 
 ## Endpoints
 
 - `GET /api/health`
-- `GET /api/projects?category=all|web-apps|full-stack|frontend`
+- `GET /api/projects?category=all|web-apps|full-stack|frontend|backend`
 - `GET /api/projects/:id`
 - `GET /api/blog`
 - `GET /api/blog/:id`

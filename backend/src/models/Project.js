@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema(
     image:       { type: String, default: '' },
     category: {
       type:    String,
-      enum:    ['web-apps', 'full-stack', 'frontend'],
+      enum:    ['web-apps', 'full-stack', 'frontend', 'backend'],
       default: 'full-stack',
     },
     status: {
