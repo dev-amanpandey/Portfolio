@@ -20,9 +20,17 @@ Express and MongoDB API for the React portfolio. The Vite proxy forwards `/api` 
 - `GET /api/resume` — public current resume metadata and URL (404 until one is uploaded)
 - `GET /api/resume/admin/current`, `POST /api/resume`, and `DELETE /api/resume` — admin-only resume management; upload field name: `resume`
 
-## Resume uploads and deployment
+## Cloudinary setup and deployment
 
-Resume files use the existing local upload storage at `uploads/resume`, and MongoDB stores the one active resume record. Mount `backend/uploads` on persistent storage in production; otherwise files will be lost whenever an ephemeral server/container is rebuilt.
+All new project images, certificate files, and resumes are stored permanently in Cloudinary. Create a Cloudinary account, copy its Cloud Name, API Key, and API Secret into the backend environment, and add the same three values to Render's Environment Variables:
+
+```env
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+MongoDB stores the resulting secure Cloudinary URL and a private Cloudinary public ID for safe replacement/deletion. The existing `/uploads` static route remains available only for legacy MongoDB records that still point to local files; it is not used for new uploads.
 
 Use these environment variables for production:
 

@@ -109,7 +109,7 @@ export default function AdminResume() {
           </div>
           <div className="admin-certificate-actions">
             <a href={apiAssetUrl(resume.fileUrl)} target="_blank" rel="noreferrer" className="admin-action-link">View <ExternalLink size={15} /></a>
-            <a href={apiAssetUrl(resume.fileUrl)} download={resume.fileName} className="admin-action-link">Download <Download size={15} /></a>
+            <a href={resumeAPI.downloadUrl()} className="admin-action-link">Download <Download size={15} /></a>
             <button type="button" className="admin-delete-button" onClick={deleteResume} disabled={uploading || deleting}><Trash2 size={15} /> {deleting ? 'Deleting…' : 'Delete'}</button>
           </div>
         </article>

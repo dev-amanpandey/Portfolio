@@ -74,6 +74,7 @@ const resumeRequest = async (path = '', options = {}) => {
 
 export const resumeAPI = {
   publicCurrent: () => resumeRequest(),
+  downloadUrl: () => `${API_BASE}/resume/download`,
   current: () => resumeRequest('/admin/current'),
   upload: (formData) => resumeRequest('', { method: 'POST', body: formData }),
   remove: () => resumeRequest('', { method: 'DELETE' }),

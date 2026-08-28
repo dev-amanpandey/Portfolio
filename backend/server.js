@@ -17,6 +17,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
+// Kept for legacy database records that still reference /uploads paths. New uploads use Cloudinary.
 app.use('/uploads', express.static(`${__dirname}/uploads`));
 
 app.get('/api/health', (_req, res) => {
@@ -35,7 +36,7 @@ mongoose
   .connect(mongoUri)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => console.log(`Portfolio API running at http://localhost:${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => console.log(`Portfolio API running at http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err.message);

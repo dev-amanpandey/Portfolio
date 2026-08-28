@@ -8,6 +8,7 @@ const projectSchema = new mongoose.Schema(
     liveUrl:     { type: String, default: '' },
     githubUrl:   { type: String, default: '' },
     image:       { type: String, default: '' },
+    imagePublicId: { type: String, default: '' },
     category: {
       type:    String,
       enum:    ['web-apps', 'full-stack', 'frontend', 'backend'],
