@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import CertificateCard from '../components/CertificateCard';
-import { certificateAPI, projectAPI, resumeAPI } from '../api';
+import { certificateAPI, contactAPI, projectAPI, resumeAPI } from '../api';
 
 const navItems = [
   ['Home', 'home'], ['About', 'about'], ['Skills', 'skills'], ['Projects', 'projects'], ['Certificates', 'certificates'], ['Contact', 'contact'],
@@ -99,13 +99,7 @@ export default function PublicPortfolio() {
     submitButton.disabled = true;
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(formData.entries())),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'Unable to send your message.');
+      const result = await contactAPI.send(Object.fromEntries(formData.entries()));
       form.reset();
       window.alert(result.message);
     } catch (error) {

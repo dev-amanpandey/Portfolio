@@ -80,3 +80,16 @@ export const resumeAPI = {
   upload: (formData) => resumeRequest('', { method: 'POST', body: formData }),
   remove: () => resumeRequest('', { method: 'DELETE' }),
 };
+
+export const contactAPI = {
+  send: async (data) => {
+    const response = await fetch(`${API_BASE}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Unable to send your message.');
+    return result;
+  },
+};
