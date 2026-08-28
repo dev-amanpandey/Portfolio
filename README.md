@@ -1,4 +1,4 @@
-# 🚀 MyPortfolio
+# 🚀 Portfolio
 
 A modern, responsive **full-stack developer portfolio website** built to showcase my technical skills, projects, certifications, and professional journey.
 
