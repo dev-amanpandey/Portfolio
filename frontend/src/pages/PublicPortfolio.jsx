@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import CertificateCard from '../components/CertificateCard';
-import { resumeAPI } from '../api';
+import { certificateAPI, projectAPI, resumeAPI } from '../api';
 
 const navItems = [
   ['Home', 'home'], ['About', 'about'], ['Skills', 'skills'], ['Projects', 'projects'], ['Certificates', 'certificates'], ['Contact', 'contact'],
@@ -45,8 +45,7 @@ export default function PublicPortfolio() {
   }, [dark]);
 
   useEffect(() => {
-    fetch('/api/projects')
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load projects.')))
+    projectAPI.publicList()
       .then((result) => setProjects(result.data || []))
       .catch(() => setProjects([]));
   }, []);
@@ -58,8 +57,7 @@ export default function PublicPortfolio() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/certificates')
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load certificates.')))
+    certificateAPI.list()
       .then((result) => setCertificates(result.data || []))
       .catch(() => setCertificateError('Certificates are unavailable right now.'));
   }, []);

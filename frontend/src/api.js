@@ -58,6 +58,7 @@ const projectRequest = async (path = '', options = {}) => {
 };
 
 export const projectAPI = {
+  publicList: () => projectRequest(),
   list: () => projectRequest('/admin/all'),
   create: (formData) => projectRequest('', { method: 'POST', body: formData }),
   update: (id, formData) => projectRequest(`/${id}`, { method: 'PUT', body: formData }),
