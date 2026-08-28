@@ -1,4 +1,9 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+
+export const apiAssetUrl = (fileUrl) => {
+  if (!fileUrl || /^https?:\/\//i.test(fileUrl) || !API_BASE.startsWith('http')) return fileUrl;
+  return `${new URL(API_BASE).origin}${fileUrl}`;
+};
 
 export const authAPI = {
   login: async (email, password) => {
@@ -58,4 +63,18 @@ export const projectAPI = {
   update: (id, formData) => projectRequest(`/${id}`, { method: 'PUT', body: formData }),
   updateStatus: (id, data) => projectRequest(`/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
   remove: (id) => projectRequest(`/${id}`, { method: 'DELETE' }),
+};
+
+const resumeRequest = async (path = '', options = {}) => {
+  const response = await fetch(`${API_BASE}/resume${path}`, { credentials: 'include', ...options });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Unable to complete the resume request.');
+  return result;
+};
+
+export const resumeAPI = {
+  publicCurrent: () => resumeRequest(),
+  current: () => resumeRequest('/admin/current'),
+  upload: (formData) => resumeRequest('', { method: 'POST', body: formData }),
+  remove: () => resumeRequest('', { method: 'DELETE' }),
 };

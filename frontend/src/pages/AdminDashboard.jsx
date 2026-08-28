@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ExternalLink, FileText, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { authAPI, certificateAPI } from '../api';
 import AdminProjects from '../components/AdminProjects';
+import AdminResume from '../components/AdminResume';
 
 const emptyForm = { title: '', issuer: '', issuedOn: '', credentialId: '', file: null };
 
@@ -145,6 +146,7 @@ export default function AdminDashboard() {
 
       <div className="admin-content">
         <AdminProjects />
+        <AdminResume />
         <section className="admin-certificates" aria-labelledby="certifications-heading">
           <div className="admin-section-header">
             <div>

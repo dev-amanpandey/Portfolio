@@ -4,6 +4,11 @@ const User = require('../models/User');
 const requireAdmin = require('../middleware/requireAdmin');
 
 const router = express.Router();
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production' || process.env.COOKIE_SAME_SITE === 'none',
+  sameSite: process.env.COOKIE_SAME_SITE || (process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax'),
+};
 
 // POST /api/admin/login
 router.post('/login', async (req, res, next) => {
@@ -33,9 +38,7 @@ router.post('/login', async (req, res, next) => {
 
     // Set HTTP-only cookie
     res.cookie('authToken', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax',
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
 
@@ -47,11 +50,7 @@ router.post('/login', async (req, res, next) => {
 
 // POST /api/admin/logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('authToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax',
-  });
+    res.clearCookie('authToken', cookieOptions);
   res.json({ success: true, message: 'Logout successful' });
 });
 

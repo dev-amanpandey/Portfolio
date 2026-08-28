@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import CertificateCard from '../components/CertificateCard';
+import { apiAssetUrl, resumeAPI } from '../api';
 
 const navItems = [
   ['Home', 'home'], ['About', 'about'], ['Skills', 'skills'], ['Projects', 'projects'], ['Certificates', 'certificates'], ['Contact', 'contact'],
@@ -36,6 +37,7 @@ export default function PublicPortfolio() {
   const projectsRef = useRef(null);
   const [certificates, setCertificates] = useState([]);
   const [certificateError, setCertificateError] = useState('');
+  const [resume, setResume] = useState(null);
   const certificatesRef = useRef(null);
 
   useEffect(() => {
@@ -47,6 +49,12 @@ export default function PublicPortfolio() {
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load projects.')))
       .then((result) => setProjects(result.data || []))
       .catch(() => setProjects([]));
+  }, []);
+
+  useEffect(() => {
+    resumeAPI.publicCurrent()
+      .then((result) => setResume(result.data || null))
+      .catch(() => setResume(null));
   }, []);
 
   useEffect(() => {
@@ -155,7 +163,7 @@ export default function PublicPortfolio() {
             <p className="intro">I build clean, scalable and efficient web solutions that solve real-world problems.</p>
             <div className="hero-actions">
               <button className="primary" onClick={() => jump('projects')}>Explore My Work <ArrowUpRight size={18} /></button>
-              <a className="secondary" href="/documents/Aman-Pandey-Resume.pdf" download>Download CV <Download size={17} /></a>
+              {resume && <a className="secondary" href={apiAssetUrl(resume.fileUrl)} download={resume.fileName}>Download Resume <Download size={17} /></a>}
             </div>
             <div className="social-line">
               <span>Let's connect</span>
@@ -196,7 +204,7 @@ export default function PublicPortfolio() {
               <div><dt>✦ Location</dt><dd>India</dd></div>
               <div><dt>✦ Experience</dt><dd>Fresher</dd></div>
             </dl>
-            <a className="primary compact" href="/documents/Aman-Pandey-Resume.pdf" download>Download CV <Download size={15} /></a>
+            {resume && <a className="primary compact" href={apiAssetUrl(resume.fileUrl)} download={resume.fileName}>Download Resume <Download size={15} /></a>}
           </div>
           <div className="about-photo">
             <div className="dot-grid" /><div className="backdrop" /><img src="/images/profile.jpeg" alt="Aman Pandey" />
