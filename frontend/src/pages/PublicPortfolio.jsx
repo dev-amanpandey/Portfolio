@@ -169,7 +169,7 @@ export default function PublicPortfolio() {
           <div className="hero-art" aria-label="Portrait of Aman Pandey">
             <div className="dot-grid" /><div className="backdrop" /><div className="rings" />
             <span className="accent-rays">⌁</span>
-            <img src="/images/profile.jpeg" alt="Aman Pandey" />
+            <img src="/images/profile2.jpeg" alt="Aman Pandey" />
             {/* <div className="experience-card"><strong>2+</strong><span>Years of<br />Experience</span></div> */}
           </div>
           <button className="scroll-hint" onClick={() => jump('about')}>Scroll Down <span><ArrowDown size={18} /></span></button>
@@ -199,7 +199,7 @@ export default function PublicPortfolio() {
             {resume && <a className="primary compact" href={resumeAPI.downloadUrl()}>Download Resume <Download size={15} /></a>}
           </div>
           <div className="about-photo">
-            <div className="dot-grid" /><div className="backdrop" /><img src="/images/profile.jpeg" alt="Aman Pandey" />
+            <div className="dot-grid" /><div className="backdrop" /><img src="/images/profile2.jpeg" alt="Aman Pandey" />
             <div className="project-count"><strong>10+</strong><span>Projects<br />Completed</span></div>
           </div>
         </section>
