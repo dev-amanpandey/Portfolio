@@ -9,7 +9,7 @@ The portfolio provides a centralized platform where visitors can learn more abou
 ## 🌐 Live Portfolio
 
 🔗 **Visit My Portfolio:**
-[Add your deployed portfolio URL here]
+https://aman-pandey-portfolio-tau.vercel.app/
 
 ---
 
