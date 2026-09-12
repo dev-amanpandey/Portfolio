@@ -12,6 +12,8 @@ Express and MongoDB API for the React portfolio. The Vite proxy forwards `/api` 
 ## Endpoints
 
 - `GET /api/health`
+- `POST /api/admin/forgot-password` with `email` — sends a 15-minute, one-time password reset link
+- `POST /api/admin/reset-password` with `token` and `password` — consumes a reset link and changes the admin password
 - `GET /api/projects?category=all|web-apps|full-stack|frontend|backend`
 - `GET /api/projects/:id`
 - `GET /api/blog`
@@ -40,6 +42,7 @@ JWT_SECRET=a-long-random-secret
 FRONTEND_URL=https://www.example.com
 # For more than one allowed frontend origin, separate values with commas.
 # FRONTEND_URL=https://www.example.com,https://example.com
+# For local testing against a deployed API, include http://localhost:5173 as well.
 ```
 
 For a same-origin deployment, leave the frontend API base unset and proxy `/api` and `/uploads` to this service. For a separately hosted frontend, build it with `VITE_API_BASE_URL=https://api.example.com/api`, add the frontend origin to `FRONTEND_URL`, and configure `COOKIE_SAME_SITE=none` over HTTPS. The server then enables secure cross-origin admin cookies and the resume links resolve to the API host.

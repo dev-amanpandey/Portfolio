@@ -16,6 +16,24 @@ export const authAPI = {
     return response.json();
   },
 
+  forgotPassword: async (email) => {
+    const response = await fetch(`${API_BASE}/admin/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    return response.json();
+  },
+
+  resetPassword: async (token, password) => {
+    const response = await fetch(`${API_BASE}/admin/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+    });
+    return response.json();
+  },
+
   logout: async () => {
     const response = await fetch(`${API_BASE}/admin/logout`, {
       method: 'POST',

@@ -26,6 +26,13 @@
   color: var(--ink);
 }
 
+.login-help {
+  margin: -16px 0 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -61,6 +68,28 @@
   color: var(--coral);
   border-radius: 8px;
   font-size: 13px;
+}
+
+.success-message {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: rgba(55, 160, 105, 0.12);
+  color: #24784c;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.text-button {
+  display: block;
+  margin: 18px auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--coral);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .login-button {
