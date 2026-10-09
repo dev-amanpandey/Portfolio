@@ -4,6 +4,7 @@ import { ExternalLink, FileText, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { authAPI, certificateAPI } from '../api';
 import AdminProjects from '../components/AdminProjects';
 import AdminResume from '../components/AdminResume';
+import AdminImages from '../components/AdminImages';
 
 const emptyForm = { title: '', issuer: '', issuedOn: '', credentialId: '', file: null };
 
@@ -147,6 +148,7 @@ export default function AdminDashboard() {
       <div className="admin-content">
         <AdminProjects />
         <AdminResume />
+        <AdminImages />
         <section className="admin-certificates" aria-labelledby="certifications-heading">
           <div className="admin-section-header">
             <div>

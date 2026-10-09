@@ -35,6 +35,7 @@ app.use('/api/projects', require('./src/routes/projects'));
 app.use('/api/blog', require('./src/routes/blog'));
 app.use('/api/certificates', require('./src/routes/certificates'));
 app.use('/api/resume', require('./src/routes/resume'));
+app.use('/api/profile-images', require('./src/routes/profileImages'));
 app.use('/api/contact', require('./src/routes/contact'));
 app.use(errorHandler);
 

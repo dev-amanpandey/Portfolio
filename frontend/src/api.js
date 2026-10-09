@@ -99,6 +99,20 @@ export const resumeAPI = {
   remove: () => resumeRequest('', { method: 'DELETE' }),
 };
 
+const profileImagesRequest = async (path = '', options = {}) => {
+  const response = await fetch(`${API_BASE}/profile-images${path}`, { credentials: 'include', ...options });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Unable to complete the profile image request.');
+  return result;
+};
+
+export const profileImagesAPI = {
+  publicList: () => profileImagesRequest(),
+  current: () => profileImagesRequest('/admin/current'),
+  replace: (slot, formData) => profileImagesRequest(`/${slot}`, { method: 'PUT', body: formData }),
+  remove: (slot) => profileImagesRequest(`/${slot}`, { method: 'DELETE' }),
+};
+
 export const contactAPI = {
   send: async (data) => {
     const response = await fetch(`${API_BASE}/contact`, {
