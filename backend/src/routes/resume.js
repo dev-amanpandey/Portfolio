@@ -31,6 +31,7 @@ router.get('/admin/current', requireAdmin, async (_req, res, next) => { try { co
 // Streams the active Cloudinary PDF through this origin so download filename and MIME type are reliable.
 router.get('/download', async (_req, res, next) => {
   try {
+    console.log|('aman badwa')
     const resume = await Resume.findOne().sort({ updatedAt: -1 });
     if (!resume) return res.status(404).json({ success: false, message: 'No resume has been uploaded yet.' });
     if (!resume.fileUrl || !/^https:\/\//i.test(resume.fileUrl)) {

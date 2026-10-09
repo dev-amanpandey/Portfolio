@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useGSAP } from '@gsap/react';
+import { gsap } from 'gsap';
+import { SplitText } from 'gsap/SplitText';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
 import {
   ArrowDown, ArrowUpRight, Award, Briefcase, ChevronLeft, ChevronRight, Code2, Download, Github,
   Home, Linkedin, Mail, Menu, Moon, Send, Sun, UserRound, X
@@ -6,6 +11,8 @@ import {
 import ProjectCard from '../components/ProjectCard';
 import CertificateCard from '../components/CertificateCard';
 import { certificateAPI, contactAPI, projectAPI, resumeAPI } from '../api';
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const navItems = [
   ['Home', 'home'], ['About', 'about'], ['Skills', 'skills'], ['Projects', 'projects'], ['Certificates', 'certificates'], ['Contact', 'contact'],
@@ -29,6 +36,10 @@ const projectFilterTabs = [
 ];
 
 export default function PublicPortfolio() {
+  const pageRef = useRef(null);
+  const preloaderRef = useRef(null);
+  const preloaderCountRef = useRef(null);
+  const preloaderBarRef = useRef(null);
   const [active, setActive] = useState('home');
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,6 +50,188 @@ export default function PublicPortfolio() {
   const [certificateError, setCertificateError] = useState('');
   const [resume, setResume] = useState(null);
   const certificatesRef = useRef(null);
+
+  useGSAP(() => {
+    const page = pageRef.current;
+    const preloader = preloaderRef.current;
+    const root = document.documentElement;
+    const media = gsap.matchMedia();
+    const cursorDot = page.querySelector('.cursor-dot');
+    const cursorRing = page.querySelector('.cursor-ring');
+    const sectionHeadings = page.querySelectorAll('.section h2');
+    const projectCards = page.querySelectorAll('.project-card');
+    const motionItems = page.querySelectorAll('.section > .eyebrow, .section-lead, .about-section > div > p:not(.eyebrow), .skill-layout, .contact-grid, .page-footer');
+    const heroHeading = page.querySelector('.hero h1');
+    const heroRole = page.querySelector('.hero .role');
+    const heroSubtitle = page.querySelector('.hero .intro');
+    const heroActions = page.querySelector('.hero-actions');
+    const splitInstances = [];
+    const cleanups = [];
+    let lenis;
+
+    const showEverything = () => {
+      gsap.set(page.querySelectorAll('.motion-reveal'), { clearProps: 'all', opacity: 1 });
+      gsap.set([sectionHeadings, motionItems, projectCards], { clearProps: 'all', opacity: 1 });
+      gsap.set([heroHeading, heroRole], { clearProps: 'all', visibility: 'visible' });
+      gsap.set([heroSubtitle, heroActions], { clearProps: 'all', autoAlpha: 1 });
+      gsap.set(preloader, { autoAlpha: 0, display: 'none' });
+    };
+
+    media.add('(prefers-reduced-motion: reduce)', () => {
+      showEverything();
+      return () => {};
+    });
+
+    media.add('(prefers-reduced-motion: no-preference)', () => {
+      const touch = window.matchMedia('(pointer: coarse), (max-width: 767px)').matches;
+      const desktop = window.matchMedia('(pointer: fine) and (min-width: 768px)').matches;
+      const sessionKey = 'aman-portfolio-preloader-seen';
+      let seen = false;
+
+      try {
+        seen = sessionStorage.getItem(sessionKey) === 'true';
+      } catch {
+        seen = false;
+      }
+
+      if (seen) {
+        gsap.set(preloader, { autoAlpha: 0, display: 'none' });
+      } else {
+        const counter = { value: 0 };
+        const preloaderTimeline = gsap.timeline({
+          defaults: { ease: 'expo.inOut' },
+          onComplete: () => {
+            try {
+              sessionStorage.setItem(sessionKey, 'true');
+            } catch {
+              // Storage can be unavailable in privacy-restricted browsers.
+            }
+          },
+        });
+        preloaderTimeline
+          .to(counter, { value: 100, duration: 1.55, ease: 'power2.out', onUpdate: () => {
+            if (preloaderCountRef.current) preloaderCountRef.current.textContent = `${Math.round(counter.value)}%`;
+          } })
+          .to(preloaderBarRef.current, { scaleX: 1, duration: 0.35 }, '<')
+          .to(preloader, { yPercent: -100, duration: 0.75, ease: 'expo.inOut' })
+          .add(() => gsap.set(preloader, { display: 'none' }));
+      }
+
+      const heroSplits = [heroHeading, heroRole].filter(Boolean).map((element) => {
+        const split = SplitText.create(element, { type: 'lines', mask: 'lines' });
+        splitInstances.push(split);
+        return split;
+      });
+      const heroLines = heroSplits.flatMap((split) => split.lines);
+      gsap.set([heroHeading, heroRole], { visibility: 'visible' });
+      gsap.set(heroLines, { yPercent: 110 });
+      gsap.set([heroSubtitle, heroActions], { y: 30, autoAlpha: 0 });
+
+      gsap.timeline({ delay: seen ? 0.15 : 2.35 })
+        .to(heroLines, { yPercent: 0, duration: 1.2, ease: 'expo.out', stagger: 0.12 })
+        .to([heroSubtitle, heroActions], { y: 0, autoAlpha: 1, duration: 0.75, ease: 'power3.out', stagger: 0.1 }, '-=0.6');
+
+      gsap.set([...sectionHeadings, ...motionItems, ...projectCards], { y: 60, autoAlpha: 0 });
+      [...sectionHeadings, ...motionItems].forEach((element) => {
+        gsap.to(element, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 80%', once: true } });
+      });
+      projectCards.forEach((card, index) => {
+        gsap.to(card, { y: 0, autoAlpha: 1, duration: 0.8, delay: index * 0.15, ease: 'power3.out', scrollTrigger: { trigger: card, start: 'top 80%', once: true } });
+      });
+
+      const aboutWords = [];
+      page.querySelectorAll('.about-section > div:first-child > p:not(.eyebrow)').forEach((paragraph) => {
+        const split = SplitText.create(paragraph, { type: 'words' });
+        splitInstances.push(split);
+        aboutWords.push(...split.words);
+      });
+      if (aboutWords.length) {
+        gsap.set(aboutWords, { opacity: 0.25 });
+        gsap.to(aboutWords, { opacity: 1, stagger: 0.08, ease: 'none', scrollTrigger: { trigger: '.about-section', start: 'top 70%', end: 'bottom 45%', scrub: true } });
+      }
+
+      if (desktop) {
+        const ticker = page.querySelector('.tech-marquee-track');
+        if (ticker) {
+          const tickerTween = gsap.to(ticker, { xPercent: -50, duration: 24, repeat: -1, ease: 'none' });
+          const stopTicker = () => tickerTween.pause();
+          const startTicker = () => tickerTween.resume();
+          ticker.addEventListener('mouseenter', stopTicker);
+          ticker.addEventListener('mouseleave', startTicker);
+          cleanups.push(() => { ticker.removeEventListener('mouseenter', stopTicker); ticker.removeEventListener('mouseleave', startTicker); });
+        }
+
+        page.querySelectorAll('.project-image, .project-image-placeholder').forEach((image) => gsap.fromTo(image, { yPercent: -8 }, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: image, start: 'top bottom', end: 'bottom top', scrub: true } }));
+        projectCards.forEach((card) => {
+          const image = card.querySelector('.project-image, .project-image-placeholder');
+          const enter = () => { gsap.to(card, { y: -5, duration: 0.3, ease: 'power2.out' }); if (image) gsap.to(image, { scale: 1.06, duration: 0.45, ease: 'power2.out' }); };
+          const leave = () => { gsap.to(card, { y: 0, duration: 0.35, ease: 'power2.out' }); if (image) gsap.to(image, { scale: 1, duration: 0.45, ease: 'power2.out' }); };
+          card.addEventListener('mouseenter', enter);
+          card.addEventListener('mouseleave', leave);
+          cleanups.push(() => { card.removeEventListener('mouseenter', enter); card.removeEventListener('mouseleave', leave); });
+        });
+
+        if (cursorDot && cursorRing) {
+          const dotX = gsap.quickTo(cursorDot, 'x', { duration: 0.12, ease: 'power3' });
+          const dotY = gsap.quickTo(cursorDot, 'y', { duration: 0.12, ease: 'power3' });
+          const ringX = gsap.quickTo(cursorRing, 'x', { duration: 0.45, ease: 'power3' });
+          const ringY = gsap.quickTo(cursorRing, 'y', { duration: 0.45, ease: 'power3' });
+          const moveCursor = (event) => { dotX(event.clientX); dotY(event.clientY); ringX(event.clientX); ringY(event.clientY); };
+          const interactive = page.querySelectorAll('a, button, .project-card');
+          const grow = () => gsap.to(cursorRing, { scale: 1.8, duration: 0.25, ease: 'power2.out' });
+          const shrink = () => gsap.to(cursorRing, { scale: 1, duration: 0.25, ease: 'power2.out' });
+          window.addEventListener('pointermove', moveCursor);
+          root.classList.add('custom-cursor-active');
+          interactive.forEach((element) => { element.addEventListener('mouseenter', grow); element.addEventListener('mouseleave', shrink); });
+          cleanups.push(() => { window.removeEventListener('pointermove', moveCursor); root.classList.remove('custom-cursor-active'); interactive.forEach((element) => { element.removeEventListener('mouseenter', grow); element.removeEventListener('mouseleave', shrink); }); });
+        }
+
+        page.querySelectorAll('.primary, .secondary, .talk-button, .social-line a, .contact-icons a').forEach((button) => {
+          const move = (event) => {
+            const bounds = button.getBoundingClientRect();
+            const x = (event.clientX - (bounds.left + bounds.width / 2)) / 120;
+            const y = (event.clientY - (bounds.top + bounds.height / 2)) / 120;
+            gsap.to(button, { x: x * 18, y: y * 18, duration: 0.3, ease: 'power2.out' });
+          };
+          const reset = () => gsap.to(button, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+          button.addEventListener('pointermove', move);
+          button.addEventListener('pointerleave', reset);
+          cleanups.push(() => { button.removeEventListener('pointermove', move); button.removeEventListener('pointerleave', reset); });
+        });
+      }
+
+      const topbar = page.querySelector('.topbar');
+      let lastScroll = window.scrollY;
+      const updateNav = () => {
+        const currentScroll = window.scrollY;
+        if (topbar) {
+          topbar.classList.toggle('scrolled', currentScroll > 24);
+          if (currentScroll > lastScroll && currentScroll > 120) topbar.classList.add('nav-hidden');
+          else if (currentScroll < lastScroll) topbar.classList.remove('nav-hidden');
+        }
+        lastScroll = currentScroll;
+      };
+      window.addEventListener('scroll', updateNav, { passive: true });
+      cleanups.push(() => window.removeEventListener('scroll', updateNav));
+
+      if (!touch) {
+        lenis = new Lenis();
+        lenis.on('scroll', ScrollTrigger.update);
+        const tickerCallback = (time) => lenis.raf(time * 1000);
+        gsap.ticker.add(tickerCallback);
+        gsap.ticker.lagSmoothing(0);
+        cleanups.push(() => { gsap.ticker.remove(tickerCallback); lenis.destroy(); });
+      }
+
+      const refresh = () => ScrollTrigger.refresh();
+      window.addEventListener('load', refresh);
+      document.fonts?.ready.then(refresh);
+      cleanups.push(() => window.removeEventListener('load', refresh));
+      return () => cleanups.forEach((cleanup) => cleanup());
+    });
+
+    return () => { splitInstances.forEach((split) => split.revert()); media.revert(); ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); };
+  }, { scope: pageRef });
 
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
@@ -116,7 +309,13 @@ export default function PublicPortfolio() {
   });
 
   return (
-    <div className="site-shell">
+    <div className="site-shell" ref={pageRef}>
+      <div className="preloader" ref={preloaderRef} aria-hidden="true">
+        <span ref={preloaderCountRef}>0%</span>
+        <div className="preloader-track"><i ref={preloaderBarRef} /></div>
+      </div>
+      <div className="cursor-dot" aria-hidden="true" />
+      <div className="cursor-ring" aria-hidden="true" />
       <aside className="side-rail">
         <button className="monogram" onClick={() => jump('home')} aria-label="Back to home">A<span>.</span></button>
         <nav className="rail-nav" aria-label="Quick navigation">
@@ -177,11 +376,24 @@ export default function PublicPortfolio() {
 
         <section className="tech-strip" aria-label="Technologies I work with">
           <span>Trusted by technologies</span>
-          <b>⚛ <i>React</i></b>
-          <b>⬡ <i>Node.js</i></b>
-          <b>◈ <i>MongoDB</i></b>
-          <b className="express">express</b>
-          <b className="tailwind">〰 <i>tailwindcss</i></b>
+          <div className="tech-marquee">
+            <div className="tech-marquee-track">
+              <div className="tech-marquee-row">
+                <b>⚛ <i>React</i></b>
+                <b>⬡ <i>Node.js</i></b>
+                <b>◈ <i>MongoDB</i></b>
+                <b className="express">express</b>
+                <b className="tailwind">〰 <i>tailwindcss</i></b>
+              </div>
+              <div className="tech-marquee-row" aria-hidden="true">
+                <b>⚛ <i>React</i></b>
+                <b>⬡ <i>Node.js</i></b>
+                <b>◈ <i>MongoDB</i></b>
+                <b className="express">express</b>
+                <b className="tailwind">〰 <i>tailwindcss</i></b>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section id="about" className="section split-section about-section">
