@@ -448,7 +448,7 @@ export default function PublicPortfolio() {
           <div className="section-header-row">
             <div>
               <p className="eyebrow">✦ My Projects</p>
-              <h2>Things I've built</h2>
+              <h2>Featured Projects</h2>
               <p className="section-lead">Here are some of the projects I've worked on. Each showcases a unique piece of development.</p>
             </div>
             {filteredProjects.length > 1 && (
@@ -496,6 +496,18 @@ export default function PublicPortfolio() {
                 tabIndex={0}
                 role="region"
                 aria-label="Projects carousel"
+                data-lenis-prevent-wheel
+                onWheel={(event) => {
+                  const row = projectsRef.current;
+                  if (!row || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+                  const canScroll = event.deltaY > 0
+                    ? row.scrollLeft < row.scrollWidth - row.clientWidth
+                    : row.scrollLeft > 0;
+                  if (canScroll) {
+                    event.preventDefault();
+                    row.scrollLeft += event.deltaY;
+                  }
+                }}
               >
                 {filteredProjects.map((project) => (
                   <ProjectCard key={project._id} project={project} />
