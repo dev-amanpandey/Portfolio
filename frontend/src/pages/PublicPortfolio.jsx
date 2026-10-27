@@ -340,6 +340,9 @@ export default function PublicPortfolio() {
       <main>
         <header className="topbar">
           <a className="wordmark" href="#home">Aman<span>.</span></a>
+          <button className="theme-toggle mobile-theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle colour mode">
+            {dark ? <Sun size={18} /> : <Moon size={18} />}<i />
+          </button>
           <nav className={menuOpen ? 'desktop-nav open' : 'desktop-nav'}>
             {navItems.map(([label, id]) => (
               <button className={active === id ? 'active' : ''} key={id} onClick={() => jump(id)}>
